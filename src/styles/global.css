@@ -17,7 +17,6 @@ a,article,aside,audio,b,blockquote,body,canvas,caption,center,dd,details,div,dl,
 /* Base Styles */
 #root{
     min-height: 100%;
-    overflow: hidden;
     display: flex;
     justify-content: space-between;
     flex-flow: column;

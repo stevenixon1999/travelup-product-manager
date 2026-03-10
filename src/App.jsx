@@ -1,6 +1,7 @@
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Banner from "./components/Banner";
+import ProductList from "./components/products/ProductList";
 
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
           <main className="main">
             <Header />
             <Banner />
+            <ProductList />
           </main>
           <Footer />
     </>

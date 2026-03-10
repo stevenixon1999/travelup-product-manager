@@ -4,7 +4,7 @@ function Banner() {
 
   return (
    <div className="banner">
-        <div className="container .banner-wrap">
+        <div className="container banner-wrap">
             <h1>Product Manager</h1>
             <p>Manage the product list efficiently.</p>
               <div className="search-wrap">

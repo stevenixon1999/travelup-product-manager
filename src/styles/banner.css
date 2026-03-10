@@ -70,3 +70,21 @@
 .banner .search-icon{
     font-size: 16px;
 }
+
+@media (max-width: 768px) {
+
+.banner h1{
+    font-size: 32px;
+    line-height: 38px;
+}
+.banner p{
+    font-size: 22px;
+    line-height: 28px;
+}
+.banner .search-input{
+    padding: 18px 0px 18px 6px;
+}
+.banner .search-btn{
+    padding: 16px 12px;
+}
+}
