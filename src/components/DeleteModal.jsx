@@ -1,4 +1,4 @@
-function DeleteModal({ isOpen, onClose, onConfirm }) {
+function DeleteModal({ isOpen, onClose, onConfirm,productTitle }) {
 
   if (!isOpen) return null;
 
@@ -6,7 +6,7 @@ function DeleteModal({ isOpen, onClose, onConfirm }) {
     <div className="modal-overlay-delete">
       <div className="modal">
         <h3>Delete Product</h3>
-        <p>Are you sure you want to delete this product? </p>
+        <p>Are you sure you want to delete   <strong> "{productTitle}" </strong> product? </p>
         <div className="modal-actions">
           <button className="btn btn-delete" onClick={onConfirm}>
              Delete

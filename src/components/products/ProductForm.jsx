@@ -1,82 +1,62 @@
 import { useState } from "react";
 import { useProducts } from "../../context/ProductContext";
 import { validateProduct } from "../../validation/productValidation";
+import FormField from "../common/FormField";
+import { productFields } from "../../config/productField";
+import useProductForm from "../../hooks/useProductForm";
 
 function ProductForm({ onClose }) {
 
   const { addProduct } = useProducts();
-  const [formData, setFormData] = useState({
+  const {
+    formData,
+    errors,
+    handleChange,
+    validate,
+    resetForm
+  } = useProductForm({
+      title: "",
+      price: "",
+      category: "",
+      image: ""
+    });
+
+const [isSubmitting, setIsSubmitting] = useState(false);
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!validate()) return;
+
+  await addProduct({
+    title: formData.title,
+    price: Number(formData.price),
+    category: formData.category,
+    thumbnail: formData.image
+  });
+
+  resetForm({
     title: "",
     price: "",
     category: "",
     image: ""
   });
 
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = validateProduct(formData);
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      await addProduct({
-        title: formData.title,
-        price: Number(formData.price),
-        category: formData.category,
-        thumbnail: formData.image
-      });
-
-      onClose();
-
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  onClose();
+};
 
   return (
     <form className="product-form" onSubmit={handleSubmit}>
-
-      <div className="form-group">
-        <label>Product Title</label>
-        <input name="title"  value={formData.title} onChange={handleChange}   /> 
-        {errors.title && <p className="form-error">{errors.title}</p>}
-      </div>
-
-      <div className="form-group">
-        <label>Price</label>
-        <input name="price" type="number" value={formData.price} onChange={handleChange} />
-        {errors.price && <p className="form-error">{errors.price}</p>}
-      </div>
-
-      <div className="form-group">
-        <label>Category</label>
-        <input name="category" value={formData.category} onChange={handleChange} />
-        {errors.category && <p className="form-error">{errors.category}</p>}
-      </div>
-
-      <div className="form-group">
-        <label>Image URL</label>
-        <input name="image" value={formData.image} onChange={handleChange} />
-        {errors.image && <p className="form-error">{errors.image}</p>}
-      </div>
+     {productFields.map((field) => (
+  <FormField
+    key={field.name}
+    label={field.label}
+    name={field.name}
+    type={field.type}
+    value={formData[field.name]}
+    onChange={handleChange}
+    error={errors[field.name]}
+  />
+))}
 
       <button className="submit-btn" disabled={isSubmitting} >
         {isSubmitting ? "Adding..." : "Add Product"}

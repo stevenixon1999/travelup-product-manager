@@ -162,6 +162,7 @@
   padding: 6px;
   border-radius: 6px;
   border: 1px solid #ddd;
+  width: 100%;
 }
 .product-card .form-error{
      font-size: 14px;

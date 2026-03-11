@@ -3,6 +3,7 @@ import { fetchProducts } from "../services/productservice";
 import { addProductAPI } from "../services/productservice";
 import { updateProductAPI } from "../services/productservice";
 import { deleteProductAPI } from "../services/productservice";
+import useDebounce from "../hooks/useDebounce";
 
 const ProductContext = createContext();
 
@@ -10,6 +11,8 @@ export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearch = useDebounce(searchTerm);
 
   const loadProducts = async () => {
     try {
@@ -65,6 +68,15 @@ const deleteProduct = async (id) => {
   );
 };
 
+const filteredProducts = products.filter((product) => {
+  const term = debouncedSearch.toLowerCase();
+
+  return (
+    product.title.toLowerCase().includes(term) ||
+    product.category.toLowerCase().includes(term)
+  );
+});
+
   useEffect(() => {
     loadProducts();
   }, []);
@@ -73,6 +85,9 @@ const deleteProduct = async (id) => {
     <ProductContext.Provider
       value={{
         products,
+        filteredProducts,
+        searchTerm,
+        setSearchTerm,
         loading,
         error,
         loadProducts,

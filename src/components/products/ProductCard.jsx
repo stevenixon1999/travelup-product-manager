@@ -2,68 +2,47 @@ import { useState } from "react";
 import { useProducts } from "../../context/ProductContext";
 import { validateProduct } from "../../validation/productValidation";
 import DeleteModal from "../DeleteModal";
+import FormField from "../common/FormField";
+import { productFields } from "../../config/productField";
+import useProductForm from "../../hooks/useProductForm";
 
 function ProductCard({ product }) {
 
   const { updateProduct ,deleteProduct} = useProducts();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
- const [errors, setErrors] = useState({});
-
-  const [formData, setFormData] = useState({
-    title: product.title,
-    price: product.price,
-    category: product.category,
-    thumbnail: product.thumbnail
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    setErrors(prev => ({
-      ...prev,
-      [name]: ""
-    }));
-  };
+  const {formData, errors, handleChange, validate, resetForm} = 
+  useProductForm({
+      title: product.title,
+      price: product.price,
+      category: product.category,
+      thumbnail: product.thumbnail
+    });
 
   const handleSave = async () => {
-    const validationErrors = validateProduct({
-      title: formData.title,
-      price: formData.price,
-      category: formData.category,
-      image: formData.thumbnail
-    });
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-    await updateProduct(product.id, {
-      ...product,
-      ...formData
-    });
-
-    setIsEditing(false);
-    setErrors({});
-  };
+  if (!validate()) return;
+  await updateProduct(product.id, {
+    ...product,
+    ...formData
+  });
+  setIsEditing(false);
+};
 
   const handleDelete = async () => {
     await deleteProduct(product.id);
     setShowDeleteModal(false);
 };
 
-  const handleCancel = () => {
-    setFormData({
-      title: product.title,
-      price: product.price,
-      category: product.category,
-      thumbnail: product.thumbnail
-    });
-    setErrors({});
-    setIsEditing(false);
-  };
+ const handleCancel = () => {
+  resetForm({
+    title: product.title,
+    price: product.price,
+    category: product.category,
+    thumbnail: product.thumbnail
+  });
+
+  setIsEditing(false);
+};
 
   return (
     <>
@@ -77,18 +56,20 @@ function ProductCard({ product }) {
      
       {isEditing ? (
         <>
-          <input name="thumbnail" value={formData.thumbnail} onChange={handleChange} placeholder="Image URL" />
-          {errors.image && <p className="form-error">{errors.image}</p>}
-
-          <input name="title" value={formData.title} onChange={handleChange} placeholder="Product title" />
-          {errors.title && <p className="form-error">{errors.title}</p>}
-
-          <input name="category" value={formData.category} onChange={handleChange} placeholder="Category"/>
-          {errors.category && <p className="form-error">{errors.category}</p>}
-
-          <input name="price" type="number" value={formData.price} onChange={handleChange} placeholder="Price"/>
-          {errors.price && <p className="form-error">{errors.price}</p>}
-
+          {productFields.map((field) => {
+  const fieldName = field.name === "image" ? "thumbnail" : field.name;
+  return (
+    <FormField
+      key={fieldName}
+      name={fieldName}
+      type={field.type}
+      value={formData[fieldName]}
+      onChange={handleChange}
+      placeholder={field.label}
+      error={errors[field.name]}
+    />
+  );
+})}
           <div className="product-actions">
             <button className="btn btn-edit" onClick={handleSave} >
               Save
@@ -120,6 +101,7 @@ function ProductCard({ product }) {
             isOpen={showDeleteModal}
             onClose={() => setShowDeleteModal(false)}
             onConfirm={handleDelete}
+            productTitle={product.title}
           />
     </>
 

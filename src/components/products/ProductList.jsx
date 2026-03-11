@@ -8,12 +8,12 @@ import ProductModal from "./ProductModal";
 
 function ProductList() {
 
-  const { products, loading, error } = useProducts();
+  const {  loading, error,filteredProducts   } = useProducts();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (loading) return <Loader />;
   if (error) return <Error error={error} />;
-  if (!products.length) { return ( <div className="container"> <p className="no-products">No products available.</p> </div> ); }
+  if (!filteredProducts.length) { return ( <div className="container"> <p className="no-products">No products available.</p> </div> ); }
  
   return (
     <div className="product-section container">
@@ -28,7 +28,7 @@ function ProductList() {
       </div>
 
       <div className="product-container">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
