@@ -159,8 +159,13 @@ Examples:
 - Product updated successfully
 - Product deleted successfully
 - Error messages for failed operations
-
 Messages automatically disappear after a few seconds.
+
+## Known Limitations
+- The application uses a public demo API for product data.
+- The API supports fetching product data but does not persist write operations.
+- For demonstration purposes, create, update, and delete operations update the local application state after the API call.
+- Changes made to products will not be permanently stored on the external API.
 
 ## Possible Improvements
 Future improvements could include:
