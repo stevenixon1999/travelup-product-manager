@@ -12,6 +12,7 @@ export const ProductProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [message, setMessage] = useState("");
   const debouncedSearch = useDebounce(searchTerm);
 
   const loadProducts = async () => {
@@ -35,17 +36,21 @@ export const ProductProvider = ({ children }) => {
       id: Date.now()
     };
     setProducts(prev => [productWithUniqueId, ...prev]);
+    setMessage("Product added successfully");
 
   } catch (error) {
     console.error("Add product failed", error);
+    setMessage("Failed to add product");
   }
 };
 
 const updateProduct = async (id, updatedProduct) => {
   try {
     await updateProductAPI(id, updatedProduct);
+    setMessage("Product updated successfully");
   } catch (error) {
     console.warn("API update failed, updating local state only");
+    setMessage("Product updated locally");
   }
 
   setProducts(prev =>
@@ -60,8 +65,10 @@ const updateProduct = async (id, updatedProduct) => {
 const deleteProduct = async (id) => {
   try {
     await deleteProductAPI(id);
+    setMessage("Product deleted successfully");
   } catch (error) {
     console.warn("API delete failed, updating local state only");
+      setMessage("Product deleted locally");
   }
   setProducts(prev =>
     prev.filter(product => product.id !== id)
@@ -81,6 +88,16 @@ const filteredProducts = products.filter((product) => {
     loadProducts();
   }, []);
 
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage("");
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
   return (
     <ProductContext.Provider
       value={{
@@ -90,6 +107,7 @@ const filteredProducts = products.filter((product) => {
         setSearchTerm,
         loading,
         error,
+        message,
         loadProducts,
         addProduct,
         updateProduct,

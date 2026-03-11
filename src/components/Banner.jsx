@@ -2,7 +2,7 @@ import { useProducts } from "../context/ProductContext";
 import "../styles/banner.css";
 
 function Banner() {
-    const { searchTerm, setSearchTerm } = useProducts();
+    const { searchTerm, setSearchTerm,message } = useProducts();
 
   return (
    <div className="banner">
@@ -21,6 +21,7 @@ function Banner() {
                       </button>
                   </div>
               </div>
+              {message && <div className="toast">{message}</div>}
           </div>
       </div>
   );
